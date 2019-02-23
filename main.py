@@ -1,23 +1,31 @@
 import sys
 sys.path.append('data')
 sys.path.append('tool')
-import data
+sys.path.append('surprise')
+import data,surprise
 import tools
 
 MAIN_RESET_CONTROL = False                          #今日是否更新开关
 MAIN_DATA_UPDATA = True                             #每日更新db
-
+MAIN_REPLAY_SURPRISE = True                         #每日复盘
 
 ###############################################################################################
 # update
 ###############################################################################################
 
-def update_db():
+def downdb():
     global MAIN_DATA_UPDATA
     if not MAIN_DATA_UPDATA:
         return
     MAIN_DATA_UPDATA = False
     data.start()
+
+def surprise():
+    global MAIN_REPLAY_SURPRISE
+    if not MAIN_REPLAY_SURPRISE:
+        return
+    MAIN_REPLAY_SURPRISE = False
+    surprise.start()
 
 def update():
     bjtime, weekday = tools.get_servertime()
@@ -37,8 +45,10 @@ def update():
         do_reset()
     elif hour == 17 and minute < 10:
         #每日更新数据
-        update_db()
-
+        downdb()
+    #elif hour == 17 and minute > 30:
+        #每日复盘
+        #surprise()
 
 '''
    if hour == 9 and minute > 14 and minute < 26:
@@ -71,7 +81,6 @@ def do_reset():
 
 def main_init():
     print('[Main] init')
-    data.init()
 
 def main_destroy():
     print('[Main] destroy')
@@ -79,6 +88,5 @@ def main_destroy():
 
 if __name__ == "__main__":
     main_init()
-    update_db()
     do_while()
     main_destroy()

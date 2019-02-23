@@ -54,7 +54,8 @@ def destroy():
     GLOBAL_CONN = None
 
 def start():
+    init()
     updateCode()
     updateGG()
     onCompleted()
-    quit()
+    destroy()
