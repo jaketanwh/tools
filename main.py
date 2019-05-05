@@ -88,5 +88,6 @@ def main_destroy():
 
 if __name__ == "__main__":
     main_init()
-    do_while()
+    downdb()
+    #do_while()
     main_destroy()

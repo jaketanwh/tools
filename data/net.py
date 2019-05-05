@@ -103,6 +103,16 @@ def tushare_history(code,start='',end='',ktype='D',autype='qfq',index=False,retr
     return df
 
 #个股
+TUSHARE_TOKEN = '55d930af86ad6b90068ff8e51c31aa35324d3a11329485ffbc7944ae'
+def tusharepro_common():
+    global TUSHARE_TOKEN
+    tushare.set_token(TUSHARE_TOKEN)
+    pro = tushare.pro_api()
+    data = pro.stock_basic(exchange='', list_status='L', fields='ts_code,symbol,name,area,industry,list_date')
+    print(data)
+    #df = tushare.pro_bar(ts_code='000001.SZ', adj='qfq', start_date='20190501', end_date='20190505')
+    #print(df)
+
 
 ######################################################################################
 # 开盘啦
@@ -164,3 +174,6 @@ def sina_history(code,scale,ma,len):
             return -1
         return evalRes
     return -1
+
+if __name__ == "__main__":
+    tusharepro_common()
