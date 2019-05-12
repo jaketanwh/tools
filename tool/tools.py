@@ -59,6 +59,15 @@ def getlastday():
     return lastdate
     """
 
+#取前n个时间差日期
+def getnday(n):
+    lastdate = getlastday()
+    oneday = datetime.timedelta(days=1)
+    while n > 0:
+        n -= 1
+        lastdate -= oneday
+    return lastdate
+
 #取涨停价
 def getzt(close,st):
     if st:

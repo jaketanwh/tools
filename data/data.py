@@ -30,9 +30,6 @@ def updateGG():
         res = t_gg.update(GLOBAL_CONN)
 
 
-
-
-
 #数据更新完后统计
 def onCompleted():
     global GLOBAL_CONN
@@ -55,7 +52,7 @@ def destroy():
 
 def start():
     init()
-    updateCode()
+    #updateCode()
     updateGG()
     onCompleted()
     destroy()

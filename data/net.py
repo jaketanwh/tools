@@ -2,6 +2,7 @@
 import requests
 import tushare
 import json
+import time
 
 '''
 head
@@ -74,10 +75,22 @@ def sendpost(url,param):
 ######################################################################################
 # tushare
 ######################################################################################
-#今日行情
+TUSHARE_INIT = 0    #0.未初始化 1.初始化
+TUSHARE_TOKEN = '55d930af86ad6b90068ff8e51c31aa35324d3a11329485ffbc7944ae'
+def tushare_init():
+    global TUSHARE_INIT, TUSHARE_TOKEN
+    if TUSHARE_INIT == 0:
+        tushare.set_token(TUSHARE_TOKEN)
+        TUSHARE_INIT = 1
+    return tushare.pro_api()
+
+#查询当前所有正常上市交易的股票列表
 def tushare_today():
     try:
-        today = tushare.get_today_all()
+        pro = tushare_init()
+        today = pro.stock_basic(exchange='', list_status='L', fields='ts_code,symbol,name,area,industry,list_date')
+
+        #today = tushare.get_today_all()
     except Exception as ee:
         print("[tushare] today faild")
         return -1,-1
@@ -98,12 +111,76 @@ get_k_data(code=None, start='', end='',ktype='D',autype='qfq',index=False,retry_
       ause : int, 默认 0 重复请求数据过程中暂停的秒数，防止请求间隔时间太短出现的问题
       drop_factor : bool, 默认 True   是否移除复权因子，在分析过程中可能复权因子意义不大，但是如需要先储存到数据库之后再分析的话，有该项目会更加灵活
 """
-def tushare_history(code,start='',end='',ktype='D',autype='qfq',index=False,retry_count=3,ause=0.001):
-    df = tushare.get_k_data(code,start,end,ktype,autype,index,retry_count,ause)
-    return df
+#def tushare_history(code,start='',end='',ktype='D',autype='qfq',index=False,retry_count=3,ause=0.001):
+#    df = tushare.get_k_data(code,start,end,ktype,autype,index,retry_count,ause)
+#    return df
+"""
+日线行情
+ts_code 	str 	股票代码
+trade_date 	str 	交易日期
+open 	float 	开盘价
+high 	float 	最高价
+low 	float 	最低价
+close 	float 	收盘价
+pre_close 	float 	昨收价
+change 	float 	涨跌额
+pct_chg 	float 	涨跌幅 （未复权，如果是复权请用 通用行情接口 ）
+vol 	float 	成交量 （手）
+amount 	float 	成交额 （千元）
+
+#ts_code='000001.SZ', start_date='20180701', end_date='20180718'
+"""
+def tushare_history(code,start,end):
+    try:
+        pro = tushare_init()
+        if int(code) >= 600000:
+            symbol = code + '.SH'
+        else:
+            symbol = code + '.SZ'
+        history = pro.daily(ts_code=symbol, start_date=start, end_date=end)
+    except Exception as ee:
+        print("[tushare] tushare_history faild")
+        return -1,-1
+    return 0,history
+
+
+
+"""
+ts_code 	str 	TS股票代码
+trade_date 	str 	交易日期
+close 	float 	当日收盘价
+turnover_rate 	float 	换手率（%）
+turnover_rate_f 	float 	换手率（自由流通股）
+volume_ratio 	float 	量比
+pe 	float 	市盈率（总市值/净利润）
+pe_ttm 	float 	市盈率（TTM）
+pb 	float 	市净率（总市值/净资产）
+ps 	float 	市销率
+ps_ttm 	float 	市销率（TTM）
+total_share 	float 	总股本 （万股）
+float_share 	float 	流通股本 （万股）
+free_share 	float 	自由流通股本 （万）
+total_mv 	float 	总市值 （万元）
+circ_mv 	float 	流通市值（万元）
+
+#'ts_code,trade_date,turnover_rate,volume_ratio,pe,pb'
+"""
+def tushare_history_fields(code,start,fields):
+    try:
+        pro = tushare_init()
+        if int(code) >= 600000:
+            symbol = code + '.SH'
+        else:
+            symbol = code + '.SZ'
+        history = pro.daily_basic(ts_code=symbol, trade_date=start, fields=fields)
+    except Exception as ee:
+        print("[tushare] tushare_history_fields faild " + code)
+        return -1, -1
+    return 0, history
+
+
 
 #个股
-TUSHARE_TOKEN = '55d930af86ad6b90068ff8e51c31aa35324d3a11329485ffbc7944ae'
 def tusharepro_common():
     global TUSHARE_TOKEN
     tushare.set_token(TUSHARE_TOKEN)
@@ -147,6 +224,7 @@ SINA_HISTORY_URL = "http://money.finance.sina.com.cn/quotes_service/api/json_v2.
 #ma 日均值（5、10、15、20、25）
 #len 个数
 def sina_history(code,scale,ma,len):
+    time.sleep(0.3)
     global SINA_HISTORY_URL
     if int(code) >= 600000:
         symbol = 'sh' + code
