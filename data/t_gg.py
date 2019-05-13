@@ -180,10 +180,33 @@ def tushare_updategg(conn):
             pe = value['pe']                                #市盈率（总市值/净利润）
             pb = value['pb']                                #市净率（总市值/净资产）
 
+            if open is None:
+                open = 0
+            if high is None:
+                high = 0
+            if low is None:
+                low = 0
+            if close is None:
+                close = 0
+            if pre_close is None:
+                pre_close = 0
+            if volume is None:
+                volume = 0
+            if open is None:
+                open = 0
+            if amount is None:
+                amount = 0
+            if turn is None:
+                turn = 0
+            if turnover is None:
+                turnover = 0
+            if vol is None:
+                vol = 0
             if pe is None:
                 pe = 0
             if pb is None:
                 pb = 0
+
             print(value)
             ssql = "SELECT * FROM `" + code + "` WHERE day = '" + date + "'"
             has = cursor.execute(ssql)
