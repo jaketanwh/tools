@@ -58,7 +58,7 @@ def send(url,typ=0,default=0):
 def sendpost(url,param):
     try:
         headers = defaultheaders()
-        code_of_html = requests.post(url, data=param, headers=headers)
+        code_of_html = requests.post(url, data=param, headers=headers, timeout=5)
         if code_of_html.status_code != 200:
             return -1
     except requests.exceptions.Timeout:
@@ -190,6 +190,16 @@ def tusharepro_common():
     #df = tushare.pro_bar(ts_code='000001.SZ', adj='qfq', start_date='20190501', end_date='20190505')
     #print(df)
 
+
+#是否交易日
+def tushare_trade(sdate,edate):
+    try:
+        pro = tushare_init()
+        res = pro.trade_cal(exchange='SSE', start_date=sdate, end_date=edate)
+    except Exception as ee:
+        print("[tushare] tushare_trade faild")
+        return -1,-1
+    return 0,res
 
 ######################################################################################
 # 开盘啦

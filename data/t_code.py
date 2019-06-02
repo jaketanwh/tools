@@ -18,7 +18,6 @@ def updateBK(name,id,percent):
 
 #取开盘啦个股数据
 def kpl_gg(code):
-    print('[Code] kpl gg update - '+code)
     lastday = tools.getlastday()
     param = kpltools.build_kpl_gg(code,lastday)
     res = -1
@@ -115,6 +114,7 @@ def ts_updatecode(conn, today):
         return -1
 
     _list = {}
+    _len = str(len(today))
     for i, row in today.iterrows():
         #code = row['ts_code']
         code = row['symbol']
@@ -125,9 +125,11 @@ def ts_updatecode(conn, today):
         #if row['trade'] == 0:
         #    continue
 
-        info = kpl_gg(code)
-        if info == -1:
-            continue
+        info = -1
+        while info == -1:
+            info = kpl_gg(code)
+
+        print('[Code] kpl gg update - ' + code + '[' + str(i+1) + '/' + _len + ']')
 
         if row['name'].find('ST') >= 0:
             st = 1

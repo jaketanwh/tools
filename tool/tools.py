@@ -59,6 +59,15 @@ def getlastday():
     return lastdate
     """
 
+#今日是否交易日 0休市 1交易
+def gettodaytrade():
+    today = datetime.date.today()
+    str = today.strftime('%Y%m%d')
+    ret = -1
+    while ret != 0:
+        ret,data = net.tushare_trade(str,str)
+    return data['is_open'][0]
+
 #取前n个时间差日期
 def getnday(n):
     lastdate = getlastday()

@@ -116,7 +116,7 @@ def tushare_updategg(conn):
     index = 1
     rlen = len(res)
     currtime = tools.getlastday().strftime("%Y%m%d")
-    starttime = tools.getnday(60).strftime("%Y%m%d")
+    starttime = tools.getnday(7).strftime("%Y%m%d")
     fields = "turnover_rate,turnover_rate_f,volume_ratio,pe,pb"
     for row in res:
         # 代码(id) 是否st(st 1.是 0.不是) 涨跌(percent) 市净率(pb) 市盈率(per) 换手(turnover) 总市值(mktcap) 流通市值(nmc) 真实市值(sjlt) 板块[名字1,名字2...](bk)
@@ -207,7 +207,7 @@ def tushare_updategg(conn):
             if pb is None:
                 pb = 0
 
-            print(value)
+            #print(value)
             ssql = "SELECT * FROM `" + code + "` WHERE day = '" + date + "'"
             has = cursor.execute(ssql)
             if has == 0:
