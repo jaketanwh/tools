@@ -5,6 +5,7 @@ sys.path.append('surprise')
 sys.path.append('dog')
 import data,surprise,dog
 import tools
+import time
 
 MAIN_RESET_CONTROL = False                          #今日是否更新开关
 MAIN_ISOPEN_DAY = tools.gettodaytrade()             #今日是否开盘
@@ -74,6 +75,7 @@ def update():
 
     #新闻
 
+    time.sleep(3)
 
 def do_while():
     while True:
@@ -110,6 +112,7 @@ def main_destroy():
 
 if __name__ == "__main__":
     main_init()
-    dog_init()
-    do_while()
+    #dog_init()
+    #do_while()
+    downdb()
     main_destroy()
