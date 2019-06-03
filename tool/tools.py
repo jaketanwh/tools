@@ -96,3 +96,10 @@ def getdt(close,st):
     dtj = Decimal(close / _corl).quantize(Decimal('0.00'))
     dtj = '{:g}'.format(float(dtj))
     return float(dtj)
+
+#取指定涨幅价
+def getpercent(close,percent):
+    _corl = percent / 100 + 1
+    pj = Decimal(close * _corl).quantize(Decimal('0.00'))
+    pj = '{:g}'.format(float(pj))
+    return float(pj)

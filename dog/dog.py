@@ -1,5 +1,7 @@
 import pymysql,sys
 sys.path.append('../data')
+sys.path.append('../tool')
+import tools
 import net
 
 ############################################################
@@ -75,33 +77,26 @@ def dog():
 
             # 2)首次涨到X%
             firstup(code)
-        '''
-            # 以下开始每帧策略
-            # 3)
-            
 
-            # 4)
-            sc(_id)
+            # 3)涨跌停
+            limitup(code)
 
-            # 5)
-            zd(_id)
+            # 4)新高
+            highup(code)
 
-            # 6)
-            xg(_id)
+            # 5)平台突破
+            platformup(code)
 
-            # 7)
-            pt(_id)
-'''
-
-    #_clock.stop()
+    # sendmsg
+    #TIP_CATCH_LIST
 
 def buildStockData(stock,code):
     stock_name,stock_open,stock_lastclose,stock_date = 0,1,2,30
     data = {}
     data['name'] = stock[stock_name]
-    data['open'] = stock[stock_open]
+    data['open'] = float(stock[stock_open])
     data['date'] = stock[stock_date]
-    data['lastclose'] = stock[stock_lastclose]
+    data['lastclose'] = float(stock[stock_lastclose])
     data['st'] = stock[stock_name].find('ST') >= 0
     data['last'] = []
     global GP_CATCH_DIC
@@ -149,7 +144,7 @@ def quickup(code):
     if percent >= 3:
         msg = '[跳水][' + stock[stock_time] + '] ' + data['name'] + ' ' + code + ' ' + BK_NAME_CATCH_DIC[code] + ' 快速跳水超过' + str(percent) + '%'
         TIP_CATCH_LIST.append(msg)
-        return
+
 
 #首次涨到3%
 FIRSTUP_OLD_TIP = []          #首次提示记录
@@ -157,23 +152,180 @@ def firstup(code):
     global FIRSTUP_OLD_TIP
     if code in FIRSTUP_OLD_TIP:
         return
+    percent = 3                             #3%
+    stock_high,stock_time = 4,31
     global GP_CATCH_DIC
     data = GP_CATCH_DIC[code]
     stock = data['list']
+    close = float(data['lastclose'])        #昨日收盘价
+    high = float(stock[stock_high])         #今日最高价
+    price = tools.getpercent(close,percent)
+    if high >= price:
+        FIRSTUP_OLD_TIP.append(code)
+        msg = '[涨幅][' + stock[stock_time] + '] ' + data['name'] + ' ' + code + ' ' + BK_NAME_CATCH_DIC[code] + ' 首次涨幅到3%'
+        TIP_CATCH_LIST.append(msg)
 
 
-    _o = data['list']
-    _omax = float(_o[4])           #今日最高价
-    _ozs = float(data['ed'])       #昨日收盘价
-    _ztj = Decimal(_ozs * 1.03).quantize(Decimal('0.00'))
-    _ztj = '{:g}'.format(float(_ztj))
-    _ztj = float(_ztj)
-    if _omax >= _ztj:
-        GP_SC_TIP_DIC.append(id)
-        if FIRST_INIT != 1:
-            s = '[涨幅][' + _o[31] + '] ' + data['name'] + ' ' + id + ' 首次涨幅到3%'
-            qq.senMsgToBuddy(s)
-            qq.sendMsgToGroup(s)
+#涨停跌停
+GP_ZT_LIST = []                         #涨停列表
+GP_DT_LIST = []                         #跌停列表
+#GP_LB_LIST = {}                         #连板列表
+def limitup(code):
+    stock_price,stock_time = 3,31
+    global GP_CATCH_DIC,GP_ZT_LIST,GP_DT_LIST  #GP_CHECK_ZT_LIST,GP_DT_CNT,GP_ZT_CNT,GP_ZT_LIST
+    data = GP_CATCH_DIC[code]
+    stock = data['list']
+    close = data['lastclose']       # 昨日收盘价
+    open = data['open']             # 开盘价
+    curprice = stock[stock_price]   # 当前价格
+    st = data.get('st',False)       # 是否st
+
+    #涨停
+    ztprice = tools.getzt(close,st)
+    if curprice == ztprice:
+        if code not in GP_ZT_LIST:
+            GP_ZT_LIST.append(code)
+            if open == curprice:
+                #竞价涨停
+                msg = '[竞价][' + stock[stock_time] + '] ' + data['name'] + ' ' + code + ' ' + BK_NAME_CATCH_DIC[code] + ' 竞价涨停'
+            else:
+                #涨停
+                msg = '[涨停][' + stock[stock_time] + '] ' + data['name'] + ' ' + code + ' ' + BK_NAME_CATCH_DIC[code] + ' 冲击涨停'
+            #if id in GP_LB_LIST.keys():
+            #    s = s + '（' + str(GP_LB_LIST[id] + 1) + '连板)'
+            #else:
+            #    s = s + '(首板)'
+            TIP_CATCH_LIST.append(msg)
+
+
+    #跌停
+    dtprice = tools.getdt(close,st)
+    if curprice == dtprice:
+        if code not in GP_DT_LIST:
+            GP_DT_LIST.append(code)
+            if open == curprice:
+                #竞价跌停
+                msg = '[竞价][' + stock[stock_time] + '] ' + data['name'] + ' ' + code + ' ' + BK_NAME_CATCH_DIC[code] + ' 竞价跌停'
+            else:
+                #跌停
+                msg = '[跌停][' + stock[stock_time] + '] ' + data['name'] + ' ' + code + ' ' + BK_NAME_CATCH_DIC[code] + ' 冲击跌停'
+            TIP_CATCH_LIST.append(msg)
+
+    '''
+    else:
+        #涨停开板
+        if id in GP_ZT_LIST:
+            if FIRST_INIT != 1:
+                if id in GP_ZT_CNT.keys():
+                    GP_ZT_CNT[id] = GP_ZT_CNT[id] + 1
+                else:
+                    GP_ZT_CNT[id] = 1
+                s = '[开板][' + _otime + '] ' + _oname + ' ' + id + ' 打开涨停板'
+                qq.senMsgToBuddy(s)
+                qq.sendMsgToGroup(s)
+            GP_ZT_LIST.remove(id)
+            GP_CZT_LIST.remove(id)
+            return
+          
+        #跌停开板
+        if id in GP_DT_LIST:
+            if FIRST_INIT != 1:
+                if id in GP_DT_CNT.keys():
+                    GP_DT_CNT[id] = GP_DT_CNT[id] + 1
+                else:
+                    GP_DT_CNT[id] = 1
+                s = '[翘板][' + _otime + '] ' + _oname + ' ' + id + ' 打开跌停板'
+                qq.senMsgToBuddy(s)
+                qq.sendMsgToGroup(s)
+            GP_DT_LIST.remove(id)
+            GP_CDT_LIST.remove(id)
+            return
+    #print('  GP_ZT_LIST cnt:' + str(len(GP_ZT_LIST)) + '  GP_DT_LIST cnt:' + str(len(GP_DT_LIST)))
+    #print(GP_ZT_LIST)
+    '''
+
+#新高
+GP_XG_DIC = {}                          # 股票新高记录
+HIGPUP_OLD_TIP = {}                     # 新高提示列表
+def highup():
+    global GP_XG_DIC,HIGPUP_OLD_TIP
+
+
+'''
+        global GP_CATCH_DIC, GP_XG_DIC, GP_XG_TIP_DIC
+        data = GP_CATCH_DIC[id]
+        _o = data.get('list', [])
+        _omax = float(_o[4])  # 今日最高价
+
+        # 没有数据
+        if id not in GP_XG_DIC.keys():
+            return
+
+        xgdata = GP_XG_DIC.get(id, {})
+        maxkey = 0
+        for key, value in xgdata.items():
+            if _omax > value and value != 0:
+                maxkey = getmax(maxkey, key)
+
+        maxkey = int(maxkey)
+        if maxkey == 0 or maxkey == 10 or maxkey == 20:
+            return
+
+        if id not in GP_XG_TIP_DIC:
+            GP_XG_TIP_DIC[id] = {}
+
+        maxkey = str(maxkey)
+        if maxkey not in GP_XG_TIP_DIC[id]:
+            GP_XG_TIP_DIC[id][maxkey] = 1
+            if FIRST_INIT != 1:
+                s = '[新高][' + _o[31] + '] ' + data['name'] + ' ' + id + ' ' + maxkey + '日新高'
+                qq.senMsgToBuddy(s)
+                qq.sendMsgToGroup(s)
+'''
+
+
+#平台突破
+GP_PT_DIC = {}                  #平台数据
+PLATFORMUP_OLD_TIP = []         #突破平台提示 向上
+PLATFORMDOWN_OLD_TIP = []       #突破平台提示 向下
+def platformup(code):
+    global GP_CATCH_DIC,GP_PT_DIC,PLATFORMUP_OLD_TIP,PLATFORMDOWN_OLD_TIP
+    data = GP_CATCH_DIC[code]
+    stock = data['list']
+
+    '''
+    _ocur = float(_o[3])  # 当前价格
+
+    # 停牌
+    if _ocur == 0:
+        return
+
+    # 没有数据
+    if id not in GP_PT_DIC.keys():
+        return
+
+    ptdata = GP_PT_DIC.get(id,{})
+
+    # 向上
+    if id not in GP_PT_TIP_U_LIST:
+        hightip = ptdata['high'] * 1.1
+        if _ocur > hightip:
+            GP_PT_TIP_U_LIST.append(id)
+            if FIRST_INIT != 1:
+                s = '[平台][' + _o[31] + '] ' + data['name'] + ' ' + id + ' 向上平台突破'
+                qq.senMsgToBuddy(s)
+                qq.sendMsgToGroup(s)
+
+    # 向下
+    if id not in GP_PT_TIP_D_LIST:
+        downtip = ptdata['low'] * 0.9
+        if _ocur < downtip:
+            GP_PT_TIP_D_LIST.append(id)
+            if FIRST_INIT != 1:
+                s = '[平台][' + _o[31] + '] ' + data['name'] + ' ' + id + ' 向下平台突破'
+                qq.senMsgToBuddy(s)
+                qq.sendMsgToGroup(s)
+'''
 ############################################################
 ##通用全局
 GLOBAL_CONN = None                      #mysql链接
