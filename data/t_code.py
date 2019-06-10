@@ -47,6 +47,7 @@ def kpl_gg(code):
         print('[code] ' + res['pankou']['name'] + ' stockplate is NoneType')
     else:
         for row in stockplate:
+            print(row)
             bk_name = row[0]     #板块name
             bk_zd = row[1]       # 涨跌幅
             bk_id = row[8]       # 板块id

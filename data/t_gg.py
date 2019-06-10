@@ -108,15 +108,16 @@ def sina_updategg(conn):
     cursor.close()
     return 0
 
-
+GLOBAL_TUSHARE_DATALEN = 1
 def tushare_updategg(conn):
+    global GLOBAL_TUSHARE_DATALEN
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM code")
     res = cursor.fetchall()
     index = 1
     rlen = len(res)
     currtime = tools.getlastday().strftime("%Y%m%d")
-    starttime = tools.getnday(7).strftime("%Y%m%d")
+    starttime = tools.getnday(GLOBAL_TUSHARE_DATALEN).strftime("%Y%m%d")
     fields = "turnover_rate,turnover_rate_f,volume_ratio,pe,pb"
     for row in res:
         # 代码(id) 是否st(st 1.是 0.不是) 涨跌(percent) 市净率(pb) 市盈率(per) 换手(turnover) 总市值(mktcap) 流通市值(nmc) 真实市值(sjlt) 板块[名字1,名字2...](bk)
@@ -145,6 +146,7 @@ def tushare_updategg(conn):
             ret = -1
             while ret == -1:
                 ret,fdf = net.tushare_history_fields(code, date, fields)
+            print(fdf)
             for __i, __row in fdf.iterrows():
                 info['turn'] = __row['turnover_rate']            #换手率
                 info['turnover'] = __row['turnover_rate_f']      #换手率（自由流通股）

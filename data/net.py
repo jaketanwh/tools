@@ -205,8 +205,8 @@ def tushare_trade(sdate,edate):
 # 开盘啦
 ######################################################################################
 KPL_RUL = 'https://pchq.kaipanla.com/w1/api/index.php'
-KPL_TOKEN = '5905a7ec37fa0f49a74b8bcef802cea7'
-KPL_USERID = 'UserID'
+KPL_TOKEN = '2efa906af1b5641270b21845a4bea7c0'
+KPL_USERID = '228432'
 #开盘啦个股数据
 def kpl(param):
     global KPL_RUL,KPL_TOKEN,KPL_USERID

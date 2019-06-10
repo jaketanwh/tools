@@ -3,7 +3,8 @@ sys.path.append('data')
 sys.path.append('tool')
 sys.path.append('surprise')
 sys.path.append('dog')
-import data,surprise,dog
+sys.path.append('msg')
+import data,surprise,dog,cls,kpl,sendmsg
 import tools
 import time
 
@@ -33,13 +34,6 @@ def surprise():
     MAIN_REPLAY_SURPRISE = False
     surprise.start()
 
-#dog
-def dog_init():
-    dog.start()
-
-def dog():
-    dog.update()
-
 def update():
     # 交易日判定
     if MAIN_ISOPEN_DAY == 0:
@@ -62,7 +56,7 @@ def update():
         print('1')
     elif (hour == 9 and minute > 29) or (hour > 9 and hour < 11) or (hour == 11 and minute < 32) or (hour > 12 and hour < 15) or (hour == 15 and minute < 2):
         #盘中
-        dog()
+        dog.update()
     elif hour == 0 and minute > 10 and minute < 20:
         #每日重置
         do_reset()
@@ -74,7 +68,13 @@ def update():
         #surprise()
 
     #新闻
+    cls.update()
 
+    #开盘啦
+    kpl.update()
+
+    #msg
+    sendmsg.update()
     time.sleep(3)
 
 def do_while():
@@ -112,7 +112,8 @@ def main_destroy():
 
 if __name__ == "__main__":
     main_init()
-    #dog_init()
-    #do_while()
-    downdb()
+    dog.start()
+    sendmsg.start()
+    do_while()
+    #downdb()
     main_destroy()

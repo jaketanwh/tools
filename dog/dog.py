@@ -1,15 +1,16 @@
 import pymysql,sys
 sys.path.append('../data')
 sys.path.append('../tool')
-import tools
-import net
+sys.path.append('../msg')
+import tools,net
+import sendmsg
 
 ############################################################
 ##逻辑处理
 GP_CATCH_DIC = {}                       # 股票缓存字典
 BK_CATCH_DIC = {}                       # 个股对应版块缓存字典
 BK_NAME_CATCH_DIC = {}                  # 版块名称缓存字典
-TIP_CATCH_LIST = []                     # 消息缓存列表
+#TIP_CATCH_LIST = []                     # 消息缓存列表
 ############################################################
 
 #盘中看盘狗
@@ -127,11 +128,12 @@ def quickup(code):
         print('[dog] minprice err')
         print(data)
         return
-    global TIP_CATCH_LIST,BK_NAME_CATCH_DIC
+    global BK_NAME_CATCH_DIC    #TIP_CATCH_LIST
     percent = int((curprice - minprice) / minprice * 100)
     if percent >= 3:
         msg = '[拉升][' + stock[stock_time] + '] ' + data['name'] + ' ' + code + ' ' + BK_NAME_CATCH_DIC[code] + ' 快速拉升涨超过' + str(percent) + '%'
-        TIP_CATCH_LIST.append(msg)
+        #TIP_CATCH_LIST.append(msg)
+        sendmsg.add(msg)
         return
 
     #快速跳水
@@ -143,7 +145,8 @@ def quickup(code):
     percent = int((maxprice - curprice) / curprice * 100)
     if percent >= 3:
         msg = '[跳水][' + stock[stock_time] + '] ' + data['name'] + ' ' + code + ' ' + BK_NAME_CATCH_DIC[code] + ' 快速跳水超过' + str(percent) + '%'
-        TIP_CATCH_LIST.append(msg)
+        #TIP_CATCH_LIST.append(msg)
+        sendmsg.add(msg)
 
 
 #首次涨到3%
@@ -163,7 +166,8 @@ def firstup(code):
     if high >= price:
         FIRSTUP_OLD_TIP.append(code)
         msg = '[涨幅][' + stock[stock_time] + '] ' + data['name'] + ' ' + code + ' ' + BK_NAME_CATCH_DIC[code] + ' 首次涨幅到3%'
-        TIP_CATCH_LIST.append(msg)
+        #TIP_CATCH_LIST.append(msg)
+        sendmsg.add(msg)
 
 
 #涨停跌停
@@ -195,7 +199,8 @@ def limitup(code):
             #    s = s + '（' + str(GP_LB_LIST[id] + 1) + '连板)'
             #else:
             #    s = s + '(首板)'
-            TIP_CATCH_LIST.append(msg)
+            #TIP_CATCH_LIST.append(msg)
+            sendmsg.add(msg)
 
 
     #跌停
@@ -209,7 +214,8 @@ def limitup(code):
             else:
                 #跌停
                 msg = '[跌停][' + stock[stock_time] + '] ' + data['name'] + ' ' + code + ' ' + BK_NAME_CATCH_DIC[code] + ' 冲击跌停'
-            TIP_CATCH_LIST.append(msg)
+            #TIP_CATCH_LIST.append(msg)
+            sendmsg.add(msg)
 
     '''
     else:
@@ -453,9 +459,9 @@ def sinainit():
 def init():
     global GLOBAL_CONN
     #读取mysql连接
-    GLOBAL_CONN = pymysql.connect(host='192.168.1.103', user='root', password='Admin123!', db='gp', port=3306, charset='utf8')
+    #GLOBAL_CONN = pymysql.connect(host='192.168.1.103', user='root', password='Admin123!', db='gp', port=3306, charset='utf8')
     #GLOBAL_CONN = pymysql.connect(host='106.14.152.18', user='stockMarket', password='kdarrkmpjX5kCbTe', db='stockMarket', port=3306, charset='utf8')
-    #GLOBAL_CONN = pymysql.connect(host='localhost', user='root', password='admin123!', db='gp', port=3306, charset='utf8')
+    GLOBAL_CONN = pymysql.connect(host='localhost', user='root', password='admin123!', db='gp', port=3306, charset='utf8')
     #GLOBAL_CONN = pymysql.connect(host='192.168.1.103', user='root', password='Admin123!', db='lanjingling', port=3306, charset='utf8')
 
 def destroy():
@@ -476,5 +482,5 @@ def update():
 
 
 
-start()
-update()
+#start()
+#update()
