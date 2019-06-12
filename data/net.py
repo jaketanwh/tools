@@ -4,6 +4,7 @@ import tushare
 import json
 import time
 
+
 '''
 head
 '''
@@ -44,11 +45,15 @@ def send(url,typ=0,default=0):
         return -1
 
     if code_of_html.status_code == 200:
+        '''
         if typ == 1:
+            print('code_of_html text')
+            print(code_of_html.text)
             html_doc = str(code_of_html.content, 'utf-8')
             return html_doc
         else:
-            return code_of_html.text
+        '''
+        return code_of_html.text
     else:
         print('[html] error:',code_of_html.status_code)
         return -1
@@ -143,7 +148,13 @@ def tushare_history(code,start,end):
         return -1,-1
     return 0,history
 
-
+def tushare_old_history(code,typ,start,end):
+    try:
+        history = tushare.get_hist_data(code, ktype=typ, start=start,end=end)
+    except Exception as ee:
+        print("[tushare] tushare_history faild")
+        return -1,-1
+    return 0,history
 
 """
 ts_code 	str 	TS股票代码

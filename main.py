@@ -112,8 +112,8 @@ def main_destroy():
 
 if __name__ == "__main__":
     main_init()
-    dog.start()
-    sendmsg.start()
-    do_while()
-    #downdb()
+    #dog.start()
+    #sendmsg.start()[Code] kpl gg updat
+    #do_while()
+    downdb()
     main_destroy()

@@ -47,7 +47,6 @@ def kpl_gg(code):
         print('[code] ' + res['pankou']['name'] + ' stockplate is NoneType')
     else:
         for row in stockplate:
-            print(row)
             bk_name = row[0]     #板块name
             bk_zd = row[1]       # 涨跌幅
             bk_id = row[8]       # 板块id
@@ -130,7 +129,7 @@ def ts_updatecode(conn, today):
         while info == -1:
             info = kpl_gg(code)
 
-        print('[Code] kpl gg update - ' + code + '[' + str(i+1) + '/' + _len + ']')
+        #print('[Code] kpl gg update - ' + code + '[' + str(i+1) + '/' + _len + ']')
 
         if row['name'].find('ST') >= 0:
             st = 1
@@ -195,6 +194,7 @@ def update(conn):
     print('[Code] 开始更新表 ' + "%s/%s/%s " %(serverTime.tm_year,serverTime.tm_mon, serverTime.tm_mday))
     ret = -1
     while ret == -1:
+        print('')
         ret,today = net.tushare_today()
 
     ret = ts_updatecode(conn,today)

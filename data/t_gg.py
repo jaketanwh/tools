@@ -108,7 +108,7 @@ def sina_updategg(conn):
     cursor.close()
     return 0
 
-GLOBAL_TUSHARE_DATALEN = 1
+GLOBAL_TUSHARE_DATALEN = 3
 def tushare_updategg(conn):
     global GLOBAL_TUSHARE_DATALEN
     cursor = conn.cursor()
@@ -146,7 +146,7 @@ def tushare_updategg(conn):
             ret = -1
             while ret == -1:
                 ret,fdf = net.tushare_history_fields(code, date, fields)
-            print(fdf)
+            #print(fdf)
             for __i, __row in fdf.iterrows():
                 info['turn'] = __row['turnover_rate']            #换手率
                 info['turnover'] = __row['turnover_rate_f']      #换手率（自由流通股）

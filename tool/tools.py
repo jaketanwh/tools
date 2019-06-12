@@ -57,6 +57,23 @@ def getlastday():
                 break
             lastdate -= oneday
     return lastdate
+    
+    def getlastday():
+    lastdate = datetime.date.today()
+    oneday = datetime.timedelta(days = 1)
+    str = lastdate.strftime('%Y%m%d')
+    ret = -1
+    while ret != 0:
+        ret,data = net.tushare_trade(str,str)
+        if ret != -1:
+            if data['is_open'][0] == 1:
+                break
+            if ret == 0:
+                lastdate -= oneday
+                str = lastdate.strftime('%Y%m%d')
+            ret = -1
+
+    return lastdate
     """
 
 #今日是否交易日 0休市 1交易

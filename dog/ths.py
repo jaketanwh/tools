@@ -1,14 +1,16 @@
 import sys
 sys.path.append('../data')
 sys.path.append('../msg')
-import net,json,time
+import net,json,time,re
 from decimal import *
 import sendmsg
+
 
 ###############################################################################################
 #  同花顺问财
  ###############################################################################################
-THS_URL = "http://www.iwencai.com/asyn/search?q=%s&queryType=stock&app=qnas&qid="
+#THS_URL = "http://www.iwencai.com/asyn/search?q=%s&queryType=stock&app=qnas&qid="
+THS_URL = 'http://www.iwencai.com/stockpick/load-data?typed=0&preParams=&ts=1&f=1&qs=result_original&selfsectsn=&querytype=stock&searchfilter=&tid=stockpick&w=%s&queryarea='
 def thsdata(condition):
     global THS_URL
     url = THS_URL % (condition)
@@ -23,6 +25,9 @@ def thsdata(condition):
 
 THS_TIP_DIC = []                    # 提示列表
 def ths():
-    res = thsdata('2019年6月10日的涨停')
+    res = thsdata(repr('2019年6月10日的涨停'))
     if res != -1:
         print(res)
+#ths()
+
+print(repr('2019年6月10日的涨停'))
