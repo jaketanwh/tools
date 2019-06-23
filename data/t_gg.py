@@ -108,7 +108,7 @@ def sina_updategg(conn):
     cursor.close()
     return 0
 
-GLOBAL_TUSHARE_DATALEN = 3
+GLOBAL_TUSHARE_DATALEN = 2
 def tushare_updategg(conn):
     global GLOBAL_TUSHARE_DATALEN
     cursor = conn.cursor()

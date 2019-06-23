@@ -81,9 +81,9 @@ def gettodaytrade():
     today = datetime.date.today()
     str = today.strftime('%Y%m%d')
     ret = -1
-    while ret != 0:
-        ret,data = net.tushare_trade(str,str)
-    return data['is_open'][0]
+    #while ret != 0:
+    ret,data = net.tushare_trade(str,str)
+    return 1#data['is_open'][0]
 
 #取前n个时间差日期
 def getnday(n):

@@ -52,7 +52,7 @@ def update():
         #竞价
         print('1')
     elif hour == 9 and minute == 25 and second > 10 and second < 20:
-        #计算竞价
+        #计算竞价[tushare] tushare_trade faild
         print('1')
     elif (hour == 9 and minute > 29) or (hour > 9 and hour < 11) or (hour == 11 and minute < 32) or (hour > 12 and hour < 15) or (hour == 15 and minute < 2):
         #盘中
@@ -103,8 +103,8 @@ def main_init():
     print('[Main] init')
     global MAIN_WEEKDAY
     week = -1
-    while week == -1:
-        _, week = tools.get_servertime()
+    #while week == -1:
+    _, week = tools.get_servertime()
     MAIN_WEEKDAY = week
 
 def main_destroy():
@@ -112,8 +112,8 @@ def main_destroy():
 
 if __name__ == "__main__":
     main_init()
-    #dog.start()
+    dog.start()
     #sendmsg.start()[Code] kpl gg updat
-    #do_while()
-    downdb()
+    do_while()
+    #downdb()
     main_destroy()

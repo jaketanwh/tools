@@ -15,6 +15,9 @@ itchat.search_chatrooms(name='LittleCoder')
 
 # wroom
 def sendMsgToWRooms(msg,wroomList):
+    print(msg)
+    if True:
+        return
     itchat.get_chatrooms(update=True)
     for wroom in wroomList:
         iRoom = itchat.search_chatrooms(wroom)
@@ -26,6 +29,9 @@ def sendMsgToWRooms(msg,wroomList):
 
 # wroom
 def sendMsgToWRoom(msg):
+    print(msg)
+    if True:
+        return
     global WCHAT_ROOMNAME
     wroom = WCHAT_ROOMNAME
     iRoom = itchat.search_chatrooms(wroom)
@@ -42,12 +48,13 @@ def update():
     if len(MSG_CATCH) == 0:
         return
 
-    for i in range(10):
+    for i in range(100):
         sendMsgToWRoom(MSG_CATCH[0])
         MSG_CATCH.pop(0)
         if len(MSG_CATCH) == 0:
             break
-
+    if len(MSG_CATCH) > 0:
+        print('剩余消息数:'+ str(len(MSG_CATCH)))
 
 def add(msg):
     if msg == None or msg == '':

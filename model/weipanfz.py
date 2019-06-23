@@ -169,9 +169,9 @@ def xgcl1(stock, data, daytime):#todayhal, cor
     print('8')
     # 9) 5F,15F，日线，MACD diff值在0之上
     df = net.tushare_old_history(stock,'D',str(data[-1][0]),str(daytime))
-    macd = getmacd(df)
-    print('macd')
-    print(macd)
+    #macd = getmacd(df)
+    #print('macd')
+    #print(macd)
 
     #macd5m = get_macd([security], check_date=todayhal, unit='5m')
     #macd15m = get_macd([security], check_date=todayhal, unit='15m')

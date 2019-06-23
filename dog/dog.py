@@ -43,7 +43,8 @@ def dog():
             code = val[14:][:6]
             stock = val[21:][:-1].split(',')
             if len(stock) != stockmax:
-                print('[dog] stock data err')
+                #print('[dog] stock data err ' + str(stockmax))
+                #print(stock)
                 continue
 
             stocklist = GP_CATCH_DIC[code]['list']
@@ -77,16 +78,16 @@ def dog():
             quickup(code)
 
             # 2)首次涨到X%
-            firstup(code)
+            #firstup(code)
 
             # 3)涨跌停
             limitup(code)
 
             # 4)新高
-            highup(code)
+            #highup(code)
 
             # 5)平台突破
-            platformup(code)
+            #platformup(code)
 
     # sendmsg
     #TIP_CATCH_LIST
@@ -111,7 +112,7 @@ def quickup(code):
     data = GP_CATCH_DIC[code]
     stock = data['list']
     lastprice = data['last']            # 上次价格
-    curprice = stock[stock_price]       # 当前价格
+    curprice = float(stock[stock_price])       # 当前价格
     lastprice.append(curprice)
 
     lastlen = len(lastprice)
@@ -123,29 +124,32 @@ def quickup(code):
         del lastprice[0]
 
     #快速拉升
-    minprice = min(lastprice)
+    minprice = float(min(lastprice))
     if minprice <= 0:
         print('[dog] minprice err')
-        print(data)
+        #print(data)
         return
     global BK_NAME_CATCH_DIC    #TIP_CATCH_LIST
-    percent = int((curprice - minprice) / minprice * 100)
+    percent = float((curprice - minprice) / minprice * 100)
+    #print('percent:' + str(percent) + '  curprice:' + str(curprice) + '   minprice:' + str(minprice))
     if percent >= 3:
-        msg = '[拉升][' + stock[stock_time] + '] ' + data['name'] + ' ' + code + ' ' + BK_NAME_CATCH_DIC[code] + ' 快速拉升涨超过' + str(percent) + '%'
+        msg = '[拉升][' + stock[stock_time] + '] ' + data['name'] + ' ' + code + ' ' + BK_NAME_CATCH_DIC[code] + ' 快速拉升' + str(percent) + '%'
         #TIP_CATCH_LIST.append(msg)
         sendmsg.add(msg)
+        lastprice.clear()
         return
 
     #快速跳水
-    maxprice = max(lastprice)
+    maxprice = float(max(lastprice))
     if maxprice <= 0:
         print('[dog] maxprice err')
-        print(data)
+        #print(data)
         return
-    percent = int((maxprice - curprice) / curprice * 100)
+    percent = float((maxprice - curprice) / curprice * 100)
     if percent >= 3:
-        msg = '[跳水][' + stock[stock_time] + '] ' + data['name'] + ' ' + code + ' ' + BK_NAME_CATCH_DIC[code] + ' 快速跳水超过' + str(percent) + '%'
+        msg = '[跳水][' + stock[stock_time] + '] ' + data['name'] + ' ' + code + ' ' + BK_NAME_CATCH_DIC[code] + ' 快速跳水' + str(percent) + '%'
         #TIP_CATCH_LIST.append(msg)
+        lastprice.clear()
         sendmsg.add(msg)
 
 
@@ -165,7 +169,7 @@ def firstup(code):
     price = tools.getpercent(close,percent)
     if high >= price:
         FIRSTUP_OLD_TIP.append(code)
-        msg = '[涨幅][' + stock[stock_time] + '] ' + data['name'] + ' ' + code + ' ' + BK_NAME_CATCH_DIC[code] + ' 首次涨幅到3%'
+        msg = '[涨幅][' + stock[stock_time] + '] ' + data['name'] + ' ' + code + ' 首次涨幅到3% ' + BK_NAME_CATCH_DIC[code]
         #TIP_CATCH_LIST.append(msg)
         sendmsg.add(msg)
 
@@ -181,20 +185,20 @@ def limitup(code):
     stock = data['list']
     close = data['lastclose']       # 昨日收盘价
     open = data['open']             # 开盘价
-    curprice = stock[stock_price]   # 当前价格
+    curprice = float(stock[stock_price])   # 当前价格
     st = data.get('st',False)       # 是否st
 
     #涨停
-    ztprice = tools.getzt(close,st)
+    ztprice = float(tools.getzt(close,st))
     if curprice == ztprice:
         if code not in GP_ZT_LIST:
             GP_ZT_LIST.append(code)
             if open == curprice:
                 #竞价涨停
-                msg = '[竞价][' + stock[stock_time] + '] ' + data['name'] + ' ' + code + ' ' + BK_NAME_CATCH_DIC[code] + ' 竞价涨停'
+                msg = '[竞价][' + stock[stock_time] + '] ' + data['name'] + ' ' + code + ' 竞价涨停 ' + BK_NAME_CATCH_DIC[code]
             else:
                 #涨停
-                msg = '[涨停][' + stock[stock_time] + '] ' + data['name'] + ' ' + code + ' ' + BK_NAME_CATCH_DIC[code] + ' 冲击涨停'
+                msg = '[涨停][' + stock[stock_time] + '] ' + data['name'] + ' ' + code  + ' 冲击涨停 ' + BK_NAME_CATCH_DIC[code]
             #if id in GP_LB_LIST.keys():
             #    s = s + '（' + str(GP_LB_LIST[id] + 1) + '连板)'
             #else:
@@ -204,16 +208,16 @@ def limitup(code):
 
 
     #跌停
-    dtprice = tools.getdt(close,st)
+    dtprice = float(tools.getdt(close,st))
     if curprice == dtprice:
         if code not in GP_DT_LIST:
             GP_DT_LIST.append(code)
             if open == curprice:
                 #竞价跌停
-                msg = '[竞价][' + stock[stock_time] + '] ' + data['name'] + ' ' + code + ' ' + BK_NAME_CATCH_DIC[code] + ' 竞价跌停'
+                msg = '[竞价][' + stock[stock_time] + '] ' + data['name'] + ' ' + code  + ' 竞价跌停 ' + BK_NAME_CATCH_DIC[code]
             else:
                 #跌停
-                msg = '[跌停][' + stock[stock_time] + '] ' + data['name'] + ' ' + code + ' ' + BK_NAME_CATCH_DIC[code] + ' 冲击跌停'
+                msg = '[跌停][' + stock[stock_time] + '] ' + data['name'] + ' ' + code  + ' 冲击跌停 ' + BK_NAME_CATCH_DIC[code]
             #TIP_CATCH_LIST.append(msg)
             sendmsg.add(msg)
 
@@ -253,7 +257,7 @@ def limitup(code):
 #新高
 GP_XG_DIC = {}                          # 股票新高记录
 HIGPUP_OLD_TIP = {}                     # 新高提示列表
-def highup():
+def highup(code):
     global GP_XG_DIC,HIGPUP_OLD_TIP
 
 
@@ -477,7 +481,7 @@ def start():
 
 def update():
     dog()
-    print('[dog] update')
+    #print('[dog] update')
 
 
 

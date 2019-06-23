@@ -35,7 +35,7 @@ def update():
                     # modified_time = info['modified_time']
                     ftime = time.strftime("%H:%M:%S", time.localtime(ctime))
                     msg = '[财联社]' + '[' + ftime + ']' + content
-                    print(msg)
+                    #print(msg)
                     sendmsg.add(msg)
 
         if len(CLS_CATCH_LIST) > 30:

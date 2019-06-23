@@ -197,7 +197,7 @@ def tusharepro_common():
     tushare.set_token(TUSHARE_TOKEN)
     pro = tushare.pro_api()
     data = pro.stock_basic(exchange='', list_status='L', fields='ts_code,symbol,name,area,industry,list_date')
-    print(data)
+    #print(data)
     #df = tushare.pro_bar(ts_code='000001.SZ', adj='qfq', start_date='20190501', end_date='20190505')
     #print(df)
 

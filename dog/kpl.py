@@ -45,7 +45,7 @@ def kpldog():
             time_local = time.localtime(tid)
             stime = time.strftime("%H:%M:%S", time_local)
             msg = '[开盘啦][' + stime + '] ' + comment
-            print(msg)
+            #print(msg)
             sendmsg.add(msg)
 
 
@@ -77,7 +77,7 @@ def kplje():
             print("[kpl] je login error")
             return -1
 
-        print(data['list'])
+        #print(data['list'])
         for row in data['list']:
             code = row['Code']
             if code in KPL_ZLJE_LIST:
@@ -89,7 +89,7 @@ def kplje():
             jz = float(jz)
             if jz > 2:
                 msg = '[主力净额][' + time.strftime("%H:%M:%S", time.localtime()) + '] ' + row['Name'] + ' ' + code + ' 本日净流入' + str(jz) + '亿'
-                print(msg)
+                #print(msg)
                 sendmsg.add(msg)
                 KPL_ZLJE_LIST.append(code)
 
