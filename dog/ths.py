@@ -16,6 +16,7 @@ def thsdata(condition):
     url = THS_URL % (condition)
     print(url)
     res = net.send(url, 1, 1)
+    print(res)
     if res != -1:
         jdata = json.loads(res)
         print(jdata)
@@ -30,4 +31,8 @@ def ths():
         print(res)
 #ths()
 
-print(repr('2019年6月10日的涨停'))
+import wencai as wc
+report = wc.get_scrape_report("上市天数大于60天；筹码集中度90小于20%；非停牌；非st；")
+print(report)
+
+#print(repr('2019年6月10日的涨停'))
