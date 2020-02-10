@@ -31,7 +31,7 @@ G_MAIL_PASSWORD = 'hphryrghxuyibcie'
 G_MAIL_SENDER = '1073341020@qq.com'
 
 #接受者邮箱账号列表 ['987654321@qq.com','123456789@qq.com']
-G_MAIL_RECEIVE_LIST = ['hai8826@163.com','jaketanwhh@126.com']
+G_MAIL_RECEIVE_LIST = ['1073341020@qq.com']
 
 #-------------------------------------------------
 
@@ -221,8 +221,12 @@ class SendEmail(object):
             self._server = smtplib.SMTP(self.HOST, self.PORT, timeout=2)
         if method == 'ssl':
             self._server = smtplib.SMTP_SSL(self.HOST, self.PORT, timeout=2)
-
-        self._server.login(self.USER, self.PASSWORD)
+        try:
+            self._server.login(self.USER, self.PASSWORD)
+        except Exception as e:
+            print('Timeout login mail')
+            return False
+        return True
 
     def construct_email_obj(self, subject='python email'):
         """构造邮件对象
@@ -266,7 +270,12 @@ class SendEmail(object):
     def send_email(self):
         """发送邮件"""
         # 使用send_message方法而不是sendmail,避免编码问题
-        self._server.send_message(from_addr=self.SENDER, to_addrs=self.RECEIVE, msg=self._email_obj)
+        try:
+            self._server.send_message(from_addr=self.SENDER, to_addrs=self.RECEIVE, msg=self._email_obj)
+        except Exception as e:
+            print('Timeout send mail')
+            return False
+        return True
 
     def quit(self):
         self._server.quit()
@@ -274,18 +283,23 @@ class SendEmail(object):
     def close(self):
         self._server.close()
 
-# wchat
+# mail
 def sendMsgToMail(msg):
     print(msg)
     global G_MAIL_HOST,G_MAIL_PORT,G_MAIL_USER,G_MAIL_PASSWORD,G_MAIL_SENDER,G_MAIL_RECEIVE_LIST
-    email = SendEmail(G_MAIL_HOST,G_MAIL_USER,G_MAIL_PASSWORD,G_MAIL_PORT,G_MAIL_SENDER,G_MAIL_RECEIVE_LIST)
-    #email.load_server_setting_from_obj(EmailConfig)
-    email.connect_smtp_server(method='ssl')
-    email.construct_email_obj(subject='okey提醒' + str(time.strftime('%Y/%m/%d %H:%M')))
-    email.add_content(content=msg)
-    #email.add_file(file_path='mail_test.txt')
-    email.send_email()
-    email.close()
+    try:
+        email = SendEmail(G_MAIL_HOST, G_MAIL_USER, G_MAIL_PASSWORD, G_MAIL_PORT, G_MAIL_SENDER, G_MAIL_RECEIVE_LIST)
+        ret = email.connect_smtp_server(method='ssl')
+        if not ret:
+            email.close()
+            return
+        email.construct_email_obj(subject='okey提醒' + str(time.strftime('%Y/%m/%d %H:%M')))
+        email.add_content(content=msg)
+        email.send_email()
+        email.close()
+    except Exception as e:
+        print('Fail to sendMsgToMail')
+        return
 
 #-------------------------------------------------
 
@@ -296,8 +310,10 @@ def do_percent(res,name):
     global PERCENT_TIP,G_PERCENT,G_TLEN
     cnt, hights, lows = 1, [], []
     for val in res:
-        hights.append(float(val[2]))
-        lows.append(float(val[3]))
+        high = float(val[2])
+        low = float(val[3])
+        hights.append(high)
+        lows.append(low)
         cnt = cnt + 1
         if cnt > 5:
             break
@@ -305,7 +321,7 @@ def do_percent(res,name):
     hmax = float(max(hights))
     lmin = float(min(lows))
     percent = float((hmax - lmin) / lmin * 100)
-    print('监测幅度:' + str(percent))
+    print('监测幅度:' + str(percent) + ' 最高价:' + str(hmax) + ' 最低价:' + str(lmin))
     if percent >= G_PERCENT:
         now = time.time()
         if PERCENT_TIP[path] > now:
