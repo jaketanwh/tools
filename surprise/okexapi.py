@@ -316,11 +316,6 @@ def do_percent(res,name):
         sendMsgToMail(msg)
 
 if __name__ == "__main__":
-    print()
-
-    msg = 'Okex推送: [hello]' + str(G_TLEN) + '分钟之内涨跌幅超过' + str(round(G_PERCENT, 2)) + '%!'
-    #sendMsgToMail(msg)
-
     #itchat.auto_login()#hotReload=True
     client = OkexClient(None, None)
     subtm = datetime.timedelta(hours=8)
