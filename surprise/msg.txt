@@ -1,0 +1,10 @@
+[
+	{
+		"question": "问题一",
+		"answer": "回答一"
+	},
+	{
+		"question": "问题二",
+		"answer": "回答二"
+	}
+]
